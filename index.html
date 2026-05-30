@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Australian Government Corporate Plans</title>
+<style>
+  :root {
+    --au-blue: #1F735E;
+    --au-dark: #19473C;
+    --au-gold: #FFADB5;
+    --au-light: #F5EEEF;
+    --au-mid: #2A9070;
+    --text: #1a1a1a;
+    --muted: #666;
+    --border: #E2D4D6;
+    --card-bg: #ffffff;
+    --tag-dept: #1F735E;
+    --tag-agency: #19473C;
+    --tag-stat: #6A1B9A;
+    --tag-entity: #BF360C;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #DECED0;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--au-dark);
+    color: white;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .header-top {
+    background: var(--au-blue);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 24px;
+    border-bottom: 3px solid #ffadb5;
+  }
+
+  .coa {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+  }
+
+  .header-title h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .header-title p {
+    font-size: 0.78rem;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+
+  .header-controls {
+    background: var(--au-dark);
+    padding: 12px 24px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-wrap {
+    flex: 1;
+    min-width: 240px;
+    position: relative;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    padding: 9px 36px 9px 14px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 0.88rem;
+    outline: none;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .search-wrap input::placeholder { color: rgba(255,255,255,0.5); }
+  .search-wrap input:focus { background: rgba(255,255,255,0.18); border-color: var(--au-gold); }
+
+  .search-wrap .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  select {
+    padding: 9px 30px 9px 12px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 0.85rem;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23fff'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  select:focus { border-color: var(--au-gold); }
+  select option { background: #1a2e45; color: white; }
+
+  .clear-btn {
+    padding: 9px 16px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 6px;
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.82rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .clear-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+
+  .stats-bar strong { color: var(--au-blue); }
+
+  .stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* ── Main layout ── */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 24px 40px;
+  }
+
+  /* ── Alpha groups ── */
+  .alpha-group { margin-bottom: 24px; }
+
+  .alpha-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .alpha-letter {
+    width: 38px;
+    height: 38px;
+    background: var(--au-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .alpha-count {
+    font-size: 0.78rem;
+    color: var(--muted);
+    background: var(--au-light);
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+
+  /* ── Cards ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    animation: fadeIn 0.25s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .card:hover {
+    box-shadow: 0 4px 16px rgba(25,71,60,0.12);
+    border-color: var(--au-mid);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .card-name {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--au-dark);
+    line-height: 1.35;
+    flex: 1;
+  }
+
+  .type-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: white;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .type-dept     { background: var(--tag-dept); }
+  .type-agency   { background: var(--tag-agency); }
+  .type-stat     { background: var(--tag-stat); }
+  .type-entity   { background: var(--tag-entity); }
+
+  .card-portfolio {
+    font-size: 0.75rem;
+    color: var(--au-mid);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .card-portfolio::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--au-mid);
+  }
+
+  .card-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 2px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .btn-open {
+    background: var(--au-blue);
+    color: white;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-open:hover { background: var(--au-dark); }
+
+  .btn-download {
+    background: var(--au-light);
+    color: var(--au-blue);
+    border: 1px solid var(--border);
+  }
+
+  .btn-download:hover { background: var(--au-blue); color: white; border-color: var(--au-blue); }
+
+  .btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+  /* ── No results ── */
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    display: none;
+  }
+
+  .no-results h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--au-dark); }
+
+  /* ── Update button ── */
+  .btn-update {
+    padding: 9px 16px;
+    border: 1px solid #FFADB5;
+    border-radius: 6px;
+    background: rgba(255,173,181,0.2);
+    color: #FFADB5;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-update:hover { background: #FFADB5; color: var(--au-dark); }
+
+  /* ── Modal overlay ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 500;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 30px 16px;
+    overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 860px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+  }
+
+  .modal-header {
+    background: var(--au-dark);
+    color: white;
+    padding: 18px 24px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .modal-header h2 { font-size: 1rem; font-weight: 700; }
+  .modal-header p  { font-size: 0.78rem; opacity: 0.7; margin-top: 3px; }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.7;
+    padding: 4px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .modal-close:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+
+  .modal-toolbar {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    background: var(--au-light);
+    flex-shrink: 0;
+  }
+
+  .modal-toolbar label { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+
+  .year-select {
+    padding: 7px 28px 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: white;
+    color: var(--text);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .btn-bulk-search {
+    padding: 8px 16px;
+    background: var(--au-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+  }
+  .btn-bulk-search:hover { background: var(--au-dark); }
+
+  .modal-info {
+    padding: 10px 24px;
+    background: #FFF8E1;
+    border-bottom: 1px solid #FFE082;
+    font-size: 0.78rem;
+    color: #5D4037;
+    flex-shrink: 0;
+    line-height: 1.5;
+  }
+
+  .modal-body {
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .update-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+
+  .update-table thead th {
+    position: sticky;
+    top: 0;
+    background: #F5F7FA;
+    border-bottom: 2px solid var(--border);
+    padding: 9px 14px;
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .update-table tbody tr { border-bottom: 1px solid var(--border); }
+  .update-table tbody tr:hover { background: var(--au-light); }
+
+  .update-table td { padding: 9px 14px; vertical-align: middle; }
+
+  .update-table .agency-name { font-weight: 600; color: var(--au-dark); }
+  .update-table .agency-portfolio { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+  .url-cell { max-width: 260px; }
+  .url-input {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 0.75rem;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .url-input:focus { border-color: var(--au-blue); }
+  .url-input.updated { border-color: #4CAF50; background: #F1F8E9; }
+
+  .search-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    background: var(--au-light);
+    color: var(--au-blue);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .search-link:hover { background: var(--au-blue); color: white; border-color: var(--au-blue); }
+
+  .modal-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    background: #F5F7FA;
+    border-radius: 0 0 12px 12px;
+    flex-shrink: 0;
+  }
+
+  .btn-apply {
+    padding: 9px 22px;
+    background: #2E7D32;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-apply:hover { background: #1B5E20; }
+
+  .btn-cancel {
+    padding: 9px 16px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-cancel:hover { background: #eee; color: var(--text); }
+
+  .changes-badge {
+    display: inline-block;
+    background: #2E7D32;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  footer a { color: var(--au-blue); }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .header-controls { gap: 8px; }
+    .search-wrap { min-width: 100%; }
+    main { padding: 16px; }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <!-- Australian Coat of Arms SVG (simplified) -->
+    <svg class="coa" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="48" fill="#C8A84B" opacity="0.2"/>
+      <circle cx="50" cy="50" r="44" fill="none" stroke="#C8A84B" stroke-width="1.5"/>
+      <!-- Shield simplified -->
+      <rect x="30" y="28" width="40" height="38" rx="4" fill="#00538B"/>
+      <rect x="30" y="28" width="40" height="12" rx="2" fill="#FFFFFF" opacity="0.3"/>
+      <path d="M30 46 h40" stroke="white" stroke-width="1" opacity="0.3"/>
+      <rect x="30" y="46" width="20" height="20" rx="2" fill="#C8A84B" opacity="0.6"/>
+      <text x="50" y="63" text-anchor="middle" fill="white" font-size="9" font-weight="bold" font-family="serif">★</text>
+      <!-- Supporters simplified -->
+      <ellipse cx="22" cy="55" rx="10" ry="14" fill="#C8A84B" opacity="0.7"/>
+      <ellipse cx="78" cy="55" rx="10" ry="14" fill="#C8A84B" opacity="0.7"/>
+      <!-- Stars above -->
+      <text x="50" y="22" text-anchor="middle" fill="#C8A84B" font-size="10">★★★★★★★</text>
+    </svg>
+    <div class="header-title">
+      <h1>Australian Government Corporate Plans</h1>
+      <p>Commonwealth Agencies, Departments &amp; Statutory Bodies — 2024–25</p>
+    </div>
+  </div>
+  <div class="header-controls">
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search by name, portfolio or description…" oninput="filterCards()">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="white" width="16" height="16">
+        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+      </svg>
+    </div>
+    <select id="portfolioFilter" onchange="filterCards()">
+      <option value="">All Portfolios</option>
+    </select>
+    <select id="typeFilter" onchange="filterCards()">
+      <option value="">All Types</option>
+      <option value="Department">Departments</option>
+      <option value="Agency">Agencies</option>
+      <option value="Statutory Body">Statutory Bodies</option>
+      <option value="Commonwealth Entity">Commonwealth Entities</option>
+    </select>
+    <select id="urlFilter" onchange="filterCards()">
+      <option value="">All Formats</option>
+      <option value="pdf">PDF Only</option>
+      <option value="web">Web Page Only</option>
+    </select>
+    <button class="clear-btn" onclick="clearFilters()">✕ Clear</button>
+    <button class="btn-update" onclick="openUpdateModal()">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
+      Update Plans
+    </button>
+  </div>
+</header>
+
+<!-- Update Plans Modal -->
+<div class="modal-overlay" id="updateModal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2>Search for Latest Corporate Plans</h2>
+        <p>Search each agency's website for a newer plan, then paste the updated URL below.</p>
+      </div>
+      <button class="modal-close" onclick="closeUpdateModal()">✕</button>
+    </div>
+    <div class="modal-toolbar">
+      <label>Plan year:</label>
+      <select class="year-select" id="targetYear" onchange="refreshSearchLinks()"></select>
+      <button class="btn-bulk-search" onclick="bulkSearch()">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+        Search All on Google
+      </button>
+      <span style="font-size:0.78rem;color:var(--muted);margin-left:4px">Opens one search per agency — allow pop-ups</span>
+    </div>
+    <div class="modal-info">
+      <strong>How to use:</strong> Click <em>Search</em> on any row to open a targeted Google search for that agency's latest corporate plan. When you find the new URL, paste it into the field and click <strong>Apply Changes</strong> to update the dashboard.
+    </div>
+    <div class="modal-body">
+      <table class="update-table">
+        <thead>
+          <tr>
+            <th style="width:36%">Agency / Department</th>
+            <th style="width:42%">Corporate Plan URL</th>
+            <th style="width:22%">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="updateTableBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <span id="changesCount" style="align-self:center;font-size:0.82rem;color:var(--muted)"></span>
+      <button class="btn-cancel" onclick="closeUpdateModal()">Cancel</button>
+      <button class="btn-apply" onclick="applyUpdates()">Apply Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar" id="statsBar">
+  <span>Showing <strong id="countShown">—</strong> of <strong id="countTotal">—</strong> entities</span>
+  <span class="stat-pill" style="background:#D6EDE8;color:#1F735E;">● Depts</span>
+  <span class="stat-pill" style="background:#C8DDD9;color:#19473C;">● Agencies</span>
+  <span class="stat-pill" style="background:#F3E5F5;color:#6A1B9A;">● Statutory Bodies</span>
+  <span class="stat-pill" style="background:#F5EEEF;color:#BF360C;">● Commonwealth Entities</span>
+  <span style="margin-left:auto; color:#999;">Last updated: 2024–25 plans</span>
+</div>
+
+<main>
+  <div id="resultsContainer"></div>
+  <div class="no-results" id="noResults">
+    <h3>No results found</h3>
+    <p>Try adjusting your search or filter criteria.</p>
+  </div>
+</main>
+
+<footer>
+  Corporate plans sourced from individual agency websites under the <a href="https://www.legislation.gov.au/Details/C2016C00432" target="_blank">PGPA Act 2013</a>.
+  Links open the official government source. For the complete list of Commonwealth entities visit
+  <a href="https://www.finance.gov.au/government/managing-commonwealth-resources/structure-australian-government-public-sector/commonwealth-entities" target="_blank">finance.gov.au</a>.
+</footer>
+
+<script>
+const AGENCIES = [
+  { name: "AAF Company", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/44bce4a8-a9ac-4c5c-b1b5-a6556eac55d6/2025-26%20AAF%20Company%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Aboriginal Hostels Limited", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/5563589d-05f9-4c07-b14a-6b7c5ca6eb46/2025-26%20Aboriginal%20Hostels%20Limited%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Aboriginal Investment NT", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/1d6ca446-2423-46d5-bfec-2d697561b81b/2025-26%20Aboriginal%20Investment%20Northern%20Territory%20Coporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Administrative Review Tribunal", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/f9bf478a-c6f3-4e32-90c8-ade025b2cd4e/2025-26%20Administrative%20Review%20Tribunal%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Aged Care Quality and Safety Commission (ACQSC)", portfolio: "Health", type: "Agency", url: "https://www.agedcarequality.gov.au/sites/default/files/media/2024-25-acqsc-corporate-plan.pdf", urlType: "pdf", description: "Protects and promotes the quality and safety of aged care services across Australia" },
+  { name: "Anindilyakwa Land Council", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/f1f1ed28-beac-466f-a1a7-589297fa8f2b/2025-26%20Anindilyakwa%20Land%20Council%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Army and Air Force Canteen Service", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/5f18747f-afc8-4024-93ab-7fd075a531e6/2025-26%20Army%20and%20Air%20Force%20Canteen%20Service%20%28AAFCANS%29%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Asbestos and Silica Safety and Eradication Agency", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/56b3a1a3-0611-4860-b409-8623d10c6366/2025-26%20Asbestos%20and%20Silica%20Safety%20and%20Eradication%20Agency%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "ASC Pty Ltd Statement of Corporate Intent", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/95ebd6b4-fb49-4943-9623-e8c174286a56/2025-26%20ASC%20Pty%20Ltd%20Statement%20of%20Corporate%20Intent.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Attorney-General's Department", portfolio: "Attorney-General", type: "Department", url: "https://www.ag.gov.au/about-us/publications/attorney-generals-department-corporate-plan-2025-26", urlType: "web", description: "Central legal adviser to the government and guardian of the Australian rule of law" },
+  { name: "Austrade (Australian Trade and Investment Commission)", portfolio: "Foreign Affairs and Trade", type: "Agency", url: "https://www.austrade.gov.au/content/dam/austrade-assets/global/wip/austrade/documents-about-us/austrade-corporate-plan-2024-25.pdf", urlType: "pdf", description: "Promotes Australia's export and investment interests internationally" },
+  { name: "Australian Border Force (ABF)", portfolio: "Home Affairs", type: "Agency", url: "https://www.homeaffairs.gov.au/commitments/files/corporate-plan-2025-26.pdf", urlType: "pdf", description: "Manages Australia's border and enforces customs, immigration and related laws" },
+  { name: "Australian Broadcasting Corporation", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/6dd2c5af-32ca-4262-8e6b-ca33386c7234/2025-26%20Australian%20Broadcasting%20Corporation%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Bureau of Statistics (ABS)", portfolio: "Treasury", type: "Agency", url: "https://www.abs.gov.au/about/our-organisation/corporate-reporting/abs-corporate-plan/latest-release", urlType: "web", description: "Australia's national statistical agency providing economic, social and environmental data" },
+  { name: "Australian Centre for International Agricultural Research (ACIAR)", portfolio: "Foreign Affairs and Trade", type: "Statutory Body", url: "https://www.aciar.gov.au/publication/corporate-publications/corporate-plan-2024-25", urlType: "web", description: "Supports agricultural research partnerships to reduce poverty in developing countries" },
+  { name: "Australian Commission on Safety and Quality in Health Care (ACSQHC)", portfolio: "Health", type: "Statutory Body", url: "https://www.safetyandquality.gov.au/publications-and-resources/resource-library/australian-commission-safety-and-quality-health-care-corporate-plan-2024-25", urlType: "web", description: "Leads national improvements in the safety and quality of health care" },
+  { name: "Australian Communications and Media Authority (ACMA)", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Agency", url: "https://www.acma.gov.au/publications/2024-08/plan/corporate-plan-2024-25", urlType: "web", description: "Regulates communications and media services across broadcast, online and radiocommunications" },
+  { name: "Australian Competition and Consumer Commission (ACCC)", portfolio: "Treasury", type: "Agency", url: "https://www.accc.gov.au/about-us/publications/serial-publications/corporate-plan-and-priorities/corporate-plan-2025-26", urlType: "web", description: "Promotes competition and fair trading to benefit consumers, businesses and the community" },
+  { name: "Australian Criminal Intelligence Commission (ACIC)", portfolio: "Home Affairs", type: "Agency", url: "https://www.acic.gov.au/sites/default/files/2024-08/australian_criminal_intelligence_commission_corporate_plan_2024-25.pdf", urlType: "pdf", description: "Collects and disseminates criminal intelligence to protect Australia from serious crime" },
+  { name: "Australian Curriculum, Assessment and Reporting Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/81f04102-d8ae-4c57-8fbb-ec59fb1caca6/2025-26%20Australian%20Curriculum%2C%20Assessment%20and%20Reporting%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Digital Health Agency", portfolio: "Health", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/2821e126-77b8-4dea-903b-b8a4ddbdde85/2025-26%20Australian%20Digital%20Health%20Agency%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Electoral Commission (AEC)", portfolio: "Finance", type: "Agency", url: "https://www.aec.gov.au/About_AEC/Publications/corporate-plan/files/2025/2024-corporate-plan.pdf", urlType: "pdf", description: "Conducts federal elections and referendums and maintains the Commonwealth electoral roll" },
+  { name: "Australian Energy Regulator (AER)", portfolio: "Treasury", type: "Agency", url: "https://www.aer.gov.au/publications/reports/corporate/accc-and-aer-corporate-plan-2025-26", urlType: "web", description: "Regulates wholesale and retail energy markets and energy networks in Australia" },
+  { name: "Australian Federal Police (AFP)", portfolio: "Home Affairs", type: "Agency", url: "https://www.afp.gov.au/news-centre/publications/corporate-plan-2025-26", urlType: "web", description: "Investigates serious and organised crime and protects Australia's national security interests" },
+  { name: "Australian Film, Television and Radio School", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/4bb68aaf-1bb0-40c3-87e6-56f8df612dfc/2025-26%20Australian%20Film%2C%20Television%20and%20Radio%20School%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Financial Security Authority (AFSA)", portfolio: "Attorney-General", type: "Agency", url: "https://www.afsa.gov.au/about-us/corporate-information/corporate-plan", urlType: "web", description: "Administers Australia's personal insolvency and personal property securities systems" },
+  { name: "Australian Fisheries Management Authority", portfolio: "Agriculture, Fisheries and Forestry", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/b82fc3f8-a811-4320-89ad-197b361af0b4/2025-26%20Australian%20Fisheries%20Management%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Hearing Services (Hearing Australia)", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/63df1be1-ddec-4e4a-92a5-6dae92e12914/2025-26%20Australian%20Hearing%20Services%20%28Hearing%20Australia%29%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Human Rights Commission (AHRC)", portfolio: "Attorney-General", type: "Statutory Body", url: "https://humanrights.gov.au/our-work/commission-general/publications/corporate-plan-2024-2025", urlType: "web", description: "Promotes and protects human rights for all people in Australia" },
+  { name: "Australian Institute for Teaching and School Leadership", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/49a8c5eb-80fe-438f-a880-300aa6c5e6b2/2025-26%20Australian%20Institute%20for%20Teaching%20and%20School%20Leadership%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Institute of Aboriginal and Torres Strait Islander Studies (AIATSIS)", portfolio: "Prime Minister and Cabinet", type: "Statutory Body", url: "https://aiatsis.gov.au/sites/default/files/2024-08/aiatsis-corporate-plan-2024-2028.pdf", urlType: "pdf", description: "Researches, preserves and promotes the culture and heritage of Indigenous Australians" },
+  { name: "Australian Institute of Criminology (AIC)", portfolio: "Attorney-General", type: "Statutory Body", url: "https://www.aic.gov.au/sites/default/files/2024-08/aic_corporate_plan_2024-25.pdf", urlType: "pdf", description: "Australia's national research and knowledge centre on crime and justice" },
+  { name: "Australian Institute of Family Studies (AIFS)", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/ce8737b5-ada7-4c3f-953a-5f9e251d4736/2025-26%20Australian%20Institute%20of%20Family%20Studies%20%28AIFS%29%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Institute of Health and Welfare (AIHW)", portfolio: "Health", type: "Statutory Body", url: "https://www.aihw.gov.au/reports/corporate-publications/corporate-plan-2025-26/summary", urlType: "web", description: "Provides authoritative health and welfare statistics and research to inform national policy" },
+  { name: "Australian Institute of Marine Science (AIMS)", portfolio: "Industry, Science and Resources", type: "Statutory Body", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/3d9f0bf3-81db-4140-a4f9-12c689378747/2025-26%20Australian%20Institute%20of%20Marine%20Science%20Corporate%20Plan.pdf", urlType: "pdf", description: "Australia's tropical marine research agency for reef and ocean ecosystem understanding" },
+  { name: "Australian Law Reform Commission", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/48c00888-e8de-4f1c-b5d8-8159516485b2/2025-26%20Australian%20Law%20Reform%20Commission%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Maritime Safety Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/ea6fca19-eb44-4c92-bf6a-e26cb0e93a5a/2025-26%20Maritime%20Safety%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Military Forces Relief Trust Fund", portfolio: "Defence", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/b79c1264-a2e4-4f28-b232-9802d41ce896/2025-26%20Australian%20Military%20Forces%20Relief%20Trust%20Fund%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian National Audit Office (ANAO)", portfolio: "Parliament", type: "Agency", url: "https://www.anao.gov.au/work/corporate/anao-corporate-plan-2025-26", urlType: "web", description: "Supports accountability and transparency in government through independent auditing to Parliament" },
+  { name: "Australian National Maritime Museum", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/742496f2-e919-4843-bbd0-aba584b5b7f5/2025-26%20Australian%20National%20MAritime%20Museum%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Naval Infrastructure Pty Ltd Statement of Corporate Intent", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/02e1fe6d-852f-420c-9af6-b8520fc71659/2025-26%20Australian%20Naval%20Infrastructure%20Pty%20Ltd%20Statement%20of%20Corporate%20Intent.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Nuclear Science and Technology Organisation", portfolio: "Industry, Science and Resources", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/bf44d290-843e-4016-bd7c-0549ab9e4aa0/2025-26%20Australian%20Nuclear%20Science%20and%20Technology%20Organisation%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Office of Financial Management (AOFM)", portfolio: "Treasury", type: "Agency", url: "https://www.aofm.gov.au/publications/corporate-plan", urlType: "web", description: "Manages the Australian Government's debt portfolio and financial assets" },
+  { name: "Australian Pesticides and Veterinary Medicines Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/f8d02420-bbbf-4add-a0ed-8971f83449ac/2025-26%20Australian%20Pesticides%20and%20Veterinary%20Medicines%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Postal Corporation Statement of Corporate Intent", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/15e0e152-94fa-455e-aa00-00e17f9071df/2025-26%20Australia%20Post%20Statement%20of%20Corporate%20Intent.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Prudential Regulation Authority (APRA)", portfolio: "Treasury", type: "Agency", url: "https://www.apra.gov.au/apra-corporate-plan-2025-26", urlType: "web", description: "Supervises banks, insurers and superannuation funds for financial system soundness" },
+  { name: "Australian Public Service Commission (APSC)", portfolio: "Prime Minister and Cabinet", type: "Agency", url: "https://www.apsc.gov.au/publication/corporate-plan-2024-28", urlType: "web", description: "Stewards the Australian Public Service workforce, values and capability" },
+  { name: "Australian Radiation Protection and Nuclear Safety Agency (ARPANSA)", portfolio: "Health", type: "Agency", url: "https://www.arpansa.gov.au/about-us/corporate-publications/corporate-plan/corporate-plan-2025-26", urlType: "web", description: "Protects people and the environment from the harmful effects of radiation" },
+  { name: "Australian Rail Track Corporation Limited Statement of Corporate Intent", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/2c76e455-d2ff-4ce4-a4aa-8c5d905410b5/2025-26%20Australian%20Rail%20Track%20Corporation%20Limited%20Statement%20of%20Corporate%20Intent.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Reinsurance Pool Corporation", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/03d062c8-1377-493b-baf6-c30565da3879/2025-26%20Australian%20Reinsurance%20Pool%20Corporation%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Renewable Energy Agency", portfolio: "Climate Change, Energy, the Environment and Water", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/470489a1-51c4-4c84-b3cc-177ece9e3f89/2025-26%20Australian%20Renewable%20Energy%20Agency%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Research Council (ARC)", portfolio: "Education", type: "Agency", url: "https://www.arc.gov.au/sites/default/files/2024-08/ARC%20Corporate%20Plan%20FY%202024%E2%80%9325.pdf", urlType: "pdf", description: "Advances research excellence and innovation through competitive grants to Australian universities" },
+  { name: "Australian Securities and Investments Commission (ASIC)", portfolio: "Treasury", type: "Agency", url: "https://www.asic.gov.au/about-asic/corporate-publications/asic-corporate-plan/", urlType: "web", description: "Regulates Australian financial services, consumer credit and authorised financial markets" },
+  { name: "Australian Security Intelligence Organisation (ASIO)", portfolio: "Home Affairs", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/55ba118d-49e9-4848-8cbb-c6bd6243be68/2025-26%20Australian%20Security%20Intelligence%20Organisation%20Corporate%20Plan.pdf", urlType: "pdf", description: "Australia's domestic security intelligence agency protecting against espionage and terrorism" },
+  { name: "Australian Signals Directorate (ASD)", portfolio: "Defence", type: "Agency", url: "https://www.asd.gov.au/about/accountability-governance/publications/asd-corporate-plan-2025-26", urlType: "web", description: "Provides foreign signals intelligence, cyber security and offensive cyber operations" },
+  { name: "Australian Skills Quality Authority (ASQA)", portfolio: "Employment and Workplace Relations", type: "Agency", url: "https://www.asqa.gov.au/sites/default/files/2024-08/asqa_corporate_plan_2024-25.pdf", urlType: "pdf", description: "Regulates Australia's vocational education and training (VET) sector" },
+  { name: "Australian Sports Commission (Australian Institute of Sport)", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/271c87d3-2aee-45ad-a60c-a6cdcac21a37/2025-26%20Australian%20Sports%20Commission%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Sports Foundation Limited", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/839179a0-db52-413a-a71a-49aaa440ff87/2025-26%20Australian%20Sports%20Foundation%20Limited%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Strategic Policy Institute", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/3e570c02-0df8-43e3-962f-5fc85950bcfd/2025-26%20Australian%20Strategic%20Policy%20Institute%20Limited%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Submarine Agency", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/37ee7368-ea66-495c-a2b8-3e7c57375ede/2025-26%20Australian%20Submarine%20Agency%20Corporate%20Plan20250902.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Taxation Office (ATO)", portfolio: "Treasury", type: "Agency", url: "https://www.ato.gov.au/about-ato/managing-the-tax-and-super-system/corporate-plan/ato-corporate-plan-2025-26", urlType: "web", description: "Administers Australia's federal taxation system and superannuation laws" },
+  { name: "Australian Trade and Investment Commission", portfolio: "Foreign Affairs and Trade", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/5aa1156b-7242-468b-bf2f-3a20a5b32719/2025-26%20Australian%20Trade%20and%20Investment%20Commission%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian Transaction Reports and Analysis Centre (AUSTRAC)", portfolio: "Home Affairs", type: "Agency", url: "https://www.austrac.gov.au/about-us/corporate-information-and-governance/corporate-plan", urlType: "web", description: "Disrupts money laundering and terrorism financing through financial intelligence and regulation" },
+  { name: "Australian Transport Safety Bureau", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/96a4de95-27ce-4575-bbc3-c5777a7ddc00/2025-26%20Australian%20Transport%20Safety%20Bureau%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Australian War Memorial (AWM)", portfolio: "Veterans' Affairs", type: "Statutory Body", url: "https://www.awm.gov.au/sites/default/files/corporate-plan-2024-28-final-compressed.pdf", urlType: "pdf", description: "Commemorates Australia's involvement in war through education and the national collection" },
+  { name: "Bundanon Trust", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/37309636-be98-44ca-a431-e5b2ddf36b20/2025-26%20Bundanon%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Bureau of Meteorology (BoM)", portfolio: "Climate Change, Energy, the Environment and Water", type: "Agency", url: "https://www.bom.gov.au/about-the-bureau/plans-performance-and-accountability/plans-and-budgets", urlType: "web", description: "Provides weather, climate, water and ocean information and services to Australia" },
+  { name: "Cancer Australia", portfolio: "Climate Change, Energy, the Environment and Water", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/41ec049e-9f59-4499-9757-439d78905c2b/2025-26%20Cancer%20Australia%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "CEA Technologies Statement of Corporate Intent", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/597f823c-58f1-413b-9e4f-f70d73985c62/2025-26%20CEA%20Technologies%20Statement%20of%20Corporate%20Intent.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Central Land Council", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/c085be96-ac21-4fc8-a673-8c71a4298bd6/2025-26%20Central%20Land%20Council%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Civil Aviation Safety Authority (CASA)", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Statutory Body", url: "https://www.casa.gov.au/resources-and-education/publications-and-resources/corporate-publications/corporate-plan-2024-25", urlType: "web", description: "Regulates civil aviation safety standards in Australia" },
+  { name: "Clean Energy Finance Corporation", portfolio: "Finance", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/c83d06ff-1525-497d-9f52-eafc41825dc7/2025-26%20Clean%20Energy%20Finance%20Corporation%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Clean Energy Regulator (CER)", portfolio: "Climate Change, Energy, the Environment and Water", type: "Agency", url: "https://cer.gov.au/about-us/our-reports-and-accountability/corporate-plans", urlType: "web", description: "Administers schemes to reduce greenhouse gas emissions and support renewable energy targets" },
+  { name: "Climate Change Authority", portfolio: "Climate Change, Energy, the Environment and Water", type: "Statutory Body", url: "https://www.climatechangeauthority.gov.au/sites/default/files/documents/2024-09/CorporatePlan2024-25.pdf", urlType: "pdf", description: "Provides expert advice to guide Australia towards a decarbonised and resilient future" },
+  { name: "Coal Mining Industry (Long Service Leave Funding) Corporation", portfolio: "Industry, Science and Resources", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/0fa50deb-b06c-4408-8fa2-bb26a39658e2/2025-26%20Coal%20Mining%20Industry%20%28Long%20Service%20Leave%20Funding%29%20Corporation%20Corporate%20Plan%20V2.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Comcare", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/61e73c0a-4593-43ad-b9dc-9d4ebebd1444/2025%E2%80%9326%20Comcare%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Commonwealth Grants Commission", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/c7547ce3-cce7-475b-9532-46a17801e447/2025-26%20Commonwealth%20Grants%20Commission%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Commonwealth Scientific and Industrial Research Organisation (CSIRO)", portfolio: "Industry, Science and Resources", type: "Statutory Body", url: "https://www.csiro.au/en/about/corporate-governance/corporate-plan/25-26-corporate-plan", urlType: "web", description: "Australia's national science agency solving the greatest challenges through innovative research" },
+  { name: "Commonwealth Superannuation Corporation", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/be894614-5a62-4086-9509-bdf6b15d2d55/2025-26%20Commonwealth%20Superannuation%20Corporation%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Creative Australia", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Statutory Body", url: "https://creative.gov.au/wp-content/uploads/2024/09/Corporate-Plan-2024%E2%80%9328.pdf", urlType: "pdf", description: "Principal arts investment and advisory body supporting Australian arts and creativity" },
+  { name: "Department of Agriculture, Fisheries and Forestry (DAFF)", portfolio: "Agriculture, Fisheries and Forestry", type: "Department", url: "https://www.agriculture.gov.au/sites/default/files/documents/daff-corporate-plan-2025-26.pdf", urlType: "pdf", description: "Strengthens Australia's agriculture, fisheries and forestry industries for productivity and sustainability" },
+  { name: "Department of Climate Change, Energy, the Environment and Water (DCCEEW)", portfolio: "Climate Change, Energy, the Environment and Water", type: "Department", url: "https://www.dcceew.gov.au/sites/default/files/documents/corporate-plan-2025-26.pdf", urlType: "pdf", description: "Leads Australia's response to climate change, energy transition and environmental protection" },
+  { name: "Department of Defence", portfolio: "Defence", type: "Department", url: "https://www.defence.gov.au/sites/default/files/2024-08/2024%E2%80%9328DefenceCorporatePlanFinal.pdf", urlType: "pdf", description: "Defends Australia and its national interests through military capability and strategic policy" },
+  { name: "Department of Education", portfolio: "Education", type: "Department", url: "https://www.education.gov.au/about-department/resources/202526-corporate-plan-department-education", urlType: "web", description: "Creates better futures through early childhood, school and higher education policy" },
+  { name: "Department of Employment and Workplace Relations (DEWR)", portfolio: "Employment and Workplace Relations", type: "Department", url: "https://www.dewr.gov.au/about-us/corporate-plan-2024-25", urlType: "web", description: "Promotes economic productivity and social wellbeing through employment and skills policy" },
+  { name: "Department of Finance", portfolio: "Finance", type: "Department", url: "https://www.finance.gov.au/publications/corporate-plan/corporate-plan-2025-26", urlType: "web", description: "Lead adviser on allocation and management of Commonwealth public resources" },
+  { name: "Department of Foreign Affairs and Trade (DFAT)", portfolio: "Foreign Affairs and Trade", type: "Department", url: "https://www.dfat.gov.au/about-us/publications/corporate/dfat-corporate-plan", urlType: "web", description: "Advances Australia's international interests, trade and investment, and provides consular services" },
+  { name: "Department of Health, Disability and Ageing", portfolio: "Health", type: "Department", url: "https://www.health.gov.au/resources/publications/corporate-plan-2025-26", urlType: "web", description: "Leads and shapes Australia's health, ageing and disability systems and access to quality care" },
+  { name: "Department of Health, Disability and Aging", portfolio: "Health", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/6a892ae3-d8cf-4e5c-9784-ef7823c5b669/2025-26%20Department%20of%20Health%2C%20Disability%20and%20Aging%20Corporate%20Plan%20V2.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Department of Home Affairs", portfolio: "Home Affairs", type: "Department", url: "https://www.homeaffairs.gov.au/commitments/files/corporate-plan-2025-26.pdf", urlType: "pdf", description: "Central agency for immigration, multicultural affairs, emergency management and domestic security" },
+  { name: "Department of Industry, Science and Resources (DISR)", portfolio: "Industry, Science and Resources", type: "Department", url: "https://www.industry.gov.au/publications/corporate-plan-2024-28", urlType: "web", description: "Grows innovative, competitive businesses, industries and regions through industry and science policy" },
+  { name: "Department of Infrastructure, Transport, Regional Development, Communications and the Arts", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Department", url: "https://www.infrastructure.gov.au/about-us/corporate-reporting/corporate-plan/2024-25-corporate-plan", urlType: "web", description: "Delivers policy and programs across transport, communications, arts and regional development" },
+  { name: "Department of Infrastructure, Transport, Regional Development, Communications, Sport and the Arts", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/1af8a0a1-bfdb-4415-89f1-fb2f068eaac5/2025-26%20Department%20of%20Infrastructure%2C%20Transport%2C%20Regional%20Development%2C%20Communications%2C%20Sport%20and%20the%20Arts%20Corporate%20Plan%20V2.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Department of Parliamentary Services", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/c583852f-3539-4797-8f1a-482ce08666ea/2025-26%20Department%20of%20Parliamentary%20Services%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Department of Social Services (DSS)", portfolio: "Social Services", type: "Department", url: "https://www.dss.gov.au/system/files/resources/department-social-services-2024-25-corporate-plan.pdf", urlType: "pdf", description: "Improves the economic and social wellbeing of individuals, families and vulnerable Australians" },
+  { name: "Department of the House of Representatives", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/1f390872-2270-4110-8b67-4d3f4c757f23/2025-26%20Department%20of%20the%20House%20of%20Representatives%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Department of the Prime Minister and Cabinet (PM&C)", portfolio: "Prime Minister and Cabinet", type: "Department", url: "https://www.pmc.gov.au/sites/default/files/resource/download/corporate-plan-2024-25.pdf", urlType: "pdf", description: "Provides high-quality advice and support to the Prime Minister and Cabinet" },
+  { name: "Department of the Senate", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/e2ba704c-7451-4e4f-87f4-40bdbd360a13/2025-26%20Department%20of%20the%20Senate%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Department of the Treasury", portfolio: "Treasury", type: "Department", url: "https://corporate-plan.treasury.gov.au/downloads/corporate-plan-2025-26.pdf", urlType: "pdf", description: "Provides macroeconomic, fiscal and financial system policy advice to government" },
+  { name: "Department of Veterans' Affairs (DVA)", portfolio: "Veterans' Affairs", type: "Department", url: "https://www.dva.gov.au/sites/default/files/2024-08/corporate-plan-2024-25.pdf", urlType: "pdf", description: "Serves and supports those who have served in defence of Australia and their families" },
+  { name: "Digital Transformation Agency (DTA)", portfolio: "Finance", type: "Agency", url: "https://www.dta.gov.au/corporate-plan-2025-26", urlType: "web", description: "Leads the digital transformation of Australian Government services and platforms" },
+  { name: "Director of National Parks", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/b39c6230-41ea-43e7-865f-d8c974b48593/2025-26%20Director%20of%20National%20Parks%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Domestic, Family and Sexual Violence Commission", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/caa50a9a-c160-4c1e-819a-e87bd9cd3491/2025-26%20Domestic%2C%20Family%2C%20and%20Sexual%20Violence%20Commission%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "eSafety Commissioner", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Statutory Body", url: "https://www.esafety.gov.au/about-us/corporate-documents/corporate-plans", urlType: "web", description: "Promotes online safety for all Australians and regulates harmful online content" },
+  { name: "Export Finance and Insurance Corporation (EFIC, Export Finance Australia)", portfolio: "Finance", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/78ffdd90-3068-4e32-b860-a25c24ccd001/2025-26%20Export%20Finance%20Australia%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Export Finance Australia (EFA)", portfolio: "Foreign Affairs and Trade", type: "Commonwealth Entity", url: "https://www.exportfinance.gov.au/our-organisation/about-us/reporting/corporate-plan/", urlType: "web", description: "Provides finance solutions to support Australian exports and overseas infrastructure development" },
+  { name: "Fair Work Commission", portfolio: "Employment and Workplace Relations", type: "Statutory Body", url: "https://www.fwc.gov.au/about-us/news-and-media/news/our-corporate-plan-2025-26-published", urlType: "web", description: "Australia's national workplace relations tribunal managing awards, agreements and disputes" },
+  { name: "Federal Court of Australia", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/e28781d7-8e7a-44e7-8b3d-27c113a8b34d/2025-26%20Federal%20Court%20of%20Australia%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Food Standards Australia New Zealand", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/674ad369-2a6e-4a6e-8bd8-9ae16ee93331/2025-26%20Food%20Standards%20Australia%20New%20Zealand%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Future Fund Management Agency", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/36a10823-48e8-456f-a44a-68be4f98988e/2025-26%20Future%20Fund%20Management%20Agency%20Corporate%20Plan%20V2.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Geoscience Australia", portfolio: "Industry, Science and Resources", type: "Agency", url: "https://www.ga.gov.au/__data/assets/pdf_file/0008/172538/GA-Corporate-Plan-2025-26.pdf", urlType: "pdf", description: "Australia's national geoscience agency providing geospatial, geological and energy resources data" },
+  { name: "Great Barrier Reef Marine Park Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/fd122750-9c5f-4f15-b775-0ba254a12958/2025-26%20Great%20Barrier%20Reef%20Marine%20Park%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "High Speed Rail Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/b37e943a-90a3-499f-944f-b0ae2a53d6e8/2025-26%20High%20Speed%20Rail%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Housing Australia", portfolio: "Treasury", type: "Commonwealth Entity", url: "https://www.housingaustralia.gov.au/sites/default/files/2024-08/housing_australia_corporate_plan_2024-25.pdf", urlType: "pdf", description: "Facilitates and delivers programs to help Australians access social and affordable housing" },
+  { name: "Independent Health and Aged Care Pricing Authority", portfolio: "Health", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/d520d29c-5197-4826-b4ae-431a4ca88145/2025-26%20IHACPA%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Independent Parliamentary Expenses Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/8d446189-4a6a-46b1-a2ff-78a29038c530/2025-26%20Independent%20Parliamentary%20Expenses%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Indigenous Business Australia", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/9636119c-8326-4a8e-83e5-34433af7d6eb/2025-26%20Indigenous%20Business%20Australia%20Corporate%20Plan%20V2.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Indigenous Land and Sea Corporation", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/41506a72-2587-4f53-8b05-e23044d08dd0/2025-26%20Indigenous%20Land%20and%20Sea%20Corporation%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Infrastructure Australia", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/a3eb7ccc-4401-435c-9dda-c098d4fd6680/2025-26%20Infrastructure%20Australia%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Inspector-General of Intelligence and Security (IGIS)", portfolio: "Prime Minister and Cabinet", type: "Statutory Body", url: "https://www.igis.gov.au/sites/default/files/2024-08/IGIS%20Corporate%20Plan%202024-25.pdf", urlType: "pdf", description: "Provides independent oversight of Australian intelligence and security agencies" },
+  { name: "Inspector-General of Taxation and Taxation Ombudsman (IGTO)", portfolio: "Treasury", type: "Statutory Body", url: "https://www.igt.gov.au/wp-content/uploads/2023/08/Corporate-Plan-FY2024.pdf", urlType: "pdf", description: "Reviews Australian taxation administration and investigates taxpayer complaints" },
+  { name: "IP Australia", portfolio: "Industry, Science and Resources", type: "Agency", url: "https://www.ipaustralia.gov.au/about-us/accountability-and-reporting/~/-/media/Project/IPA/IPAustralia/PDF/Strategic-Corporate-Plan-2024-25.pdf", urlType: "pdf", description: "Administers Australia's intellectual property rights system including patents, trademarks and designs" },
+  { name: "ITC Technologies Pty Ltd", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/3fc44469-10e7-4777-a730-decb4a2f85e0/2025-26%20ITC%20Technologies%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Murray-Darling Basin Authority (MDBA)", portfolio: "Climate Change, Energy, the Environment and Water", type: "Statutory Body", url: "https://www.mdba.gov.au/publications-and-data/publications/corporate-plan", urlType: "web", description: "Manages and plans use of shared water resources across the Murray-Darling Basin" },
+  { name: "National Anti-Corruption Commission", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/264e8b63-e531-47cd-b9ce-abb24b21cf18/2025-26%20National%20Anti-Corruption%20Commission%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Archives of Australia (NAA)", portfolio: "Prime Minister and Cabinet", type: "Statutory Body", url: "https://www.naa.gov.au/about-us/who-we-are/accountability-and-reporting/our-corporate-plans/corporate-plan-2024-25-2027-28", urlType: "web", description: "Preserves and provides access to the archival records of the Commonwealth Government" },
+  { name: "National Australia Day Council Limited", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/06796e7c-d43d-4953-9752-4b5fd29700de/2025-26%20National%20Australia%20Day%20Council%20Limited%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Blood Authority (NBA)", portfolio: "Health", type: "Statutory Body", url: "https://www.blood.gov.au/about-nba", urlType: "web", description: "Manages Australia's blood supply and oversees national blood supply arrangements" },
+  { name: "National Capital Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/89b58ee2-63c5-4b88-9f0e-3dbd0bb00144/2025-26%20National%20Capital%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Commission for Aboriginal and Torres Strait Islander Children and Young People", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/933cebd3-cedc-4fd5-ab01-156f7fb1351a/2025-26%20National%20Commission%20for%20Aboriginal%20and%20Torres%20Strait%20Islander%20Children%20and%20Young%20People%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Competition Council", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/3622aa92-5a3a-4f21-9eca-b2f49ec0e43d/2025-26%20National%20Competition%20Council%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Disability Insurance Agency (NDIA)", portfolio: "Social Services", type: "Agency", url: "https://www.ndis.gov.au/about-us/publications/corporate-plan", urlType: "web", description: "Implements and administers the National Disability Insurance Scheme (NDIS)" },
+  { name: "National Emergency Management Agency", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/6f19ae29-55a9-4051-b7f0-620f3cd33042/2025-26%20%20National%20Emergency%20Management%20Agency%20Corporate%20Plan%20V2.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Film and Sound Archive", portfolio: "Education", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/451b79b2-024b-4818-9016-9790ec2e6fa5/2025-26%20National%20Film%20and%20Sound%20Archive%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Gallery of Australia (NGA)", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Statutory Body", url: "https://nga.gov.au/media/dd/documents/NGA_CorporatePlan25-26.pdf", urlType: "pdf", description: "Develops and maintains the national collection of Australian and international artworks" },
+  { name: "National Health and Medical Research Council (NHMRC)", portfolio: "Health", type: "Statutory Body", url: "https://www.nhmrc.gov.au/about-us/publications/nhmrc-corporate-plan-2025-26", urlType: "web", description: "Funds health and medical research and develops national health advice" },
+  { name: "National Health Funding Body", portfolio: "Health", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/b66b35c4-b990-419e-9164-532da8a278df/2025-26%20National%20Health%20Funding%20Body%20Corporate%20Plan%20V2.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Indigenous Australians Agency (NIAA)", portfolio: "Prime Minister and Cabinet", type: "Agency", url: "https://www.niaa.gov.au/niaa-corporate-plan-2024-25", urlType: "web", description: "Leads Commonwealth policy development and service delivery for Aboriginal and Torres Strait Islander peoples" },
+  { name: "National Intermodal Corporation Limited Statement of Corporate Intent", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/81bc0a75-bd62-475c-9bfd-16388fe3751c/2025-26%20National%20Intermodal%20Corporation%20Limited%20Statement%20of%20Corporate%20Intent.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Library of Australia (NLA)", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Statutory Body", url: "https://www.library.gov.au/sites/default/files/documents/2024-09/nla-corporate-plan-2024-2025.pdf", urlType: "pdf", description: "Collects, preserves and provides access to Australia's published and documentary heritage" },
+  { name: "National Museum of Australia (NMA)", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Statutory Body", url: "https://www.nma.gov.au/__data/assets/pdf_file/0005/811913/NMA_Corporate_Plan_2024-25-FINAL.pdf", urlType: "pdf", description: "Explores and presents Australia's social history and cultural heritage" },
+  { name: "National Offshore Petroleum Safety and Environmental Management Authority", portfolio: "Climate Change, Energy, the Environment and Water", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/c208a5cc-0c76-4b81-8455-cffd02434ea7/2025-26%20National%20Offshore%20Petroleum%20Safety%20and%20Environmental%20Management%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Portrait Gallery of Australia", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/380fff21-306e-4574-bc5d-ea4fb134e9dc/2025-2026%20National%20Portrait%20Gallery%20of%20Australia%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Reconstruction Fund Corporation", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/aff6d153-c5d7-4faa-853b-4cef790ee44b/2025-26%20National%20Reconstruction%20Fund%20Corporation%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "National Transport Commission", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/c5e5396a-1163-4e54-89c4-17011cad9ef4/2025-26%20National%20Transport%20Commission%20Corporate%20Plan%20V2.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "NBN Co Limited Statement of Corporate Intent", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/78c531c7-e944-4998-84e8-c9b7b741710c/2025-26%20NBN%20Co%20Limited%20Statement%20of%20Corporate%20Intent.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "NDIS Quality and Safeguards Commission", portfolio: "Social Services", type: "Agency", url: "https://www.ndiscommission.gov.au/sites/default/files/2024-09/Corporate-Plan-2024-2025.pdf", urlType: "pdf", description: "Regulates NDIS providers and safeguards people with disability" },
+  { name: "Net Zero Economy Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/f03e9fd4-94fb-4ed4-8d58-29db73a9b443/2025%E2%80%9326%20Net%20Zero%20Economy%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Northern Australia Infrastructure Facility", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/f38ae4e1-86cf-4cb2-afe1-cce92783d936/2025-26%20Northern%20Australia%20Infrastructure%20Facility%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Northern Land Council", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/798805b6-771f-47f0-8f7d-d43f3515a928/2025-26%20Northern%20Land%20Council%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Office of Parliamentary Counsel", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/13fd6e6c-0204-4fc5-8d3b-a5b64f87f4a6/2025-26%20Office%20of%20Parliamentary%20Counsel%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Office of the Auditing and Assurance Standards Board", portfolio: "Finance", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/29d9e535-5ace-4a96-b35d-d77b88f33ce3/2025-26%20Office%20of%20the%20Australian%20Accounting%20Standards%20Board%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Office of the Australian Accounting Standards Board", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/15f07cbc-be04-41d5-87ba-f0cf27f2ff6c/2025-26%20Office%20of%20the%20Australian%20Accounting%20Standards%20Board%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Office of the Australian Information Commissioner", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/858e63f6-35a6-44d2-8437-ea874ea4054a/2025-26%20Office%20of%20the%20Australian%20Information%20Commissioner%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Office of the Commonwealth Ombudsman", portfolio: "Attorney-General", type: "Statutory Body", url: "https://www.ombudsman.gov.au/__data/assets/pdf_file/0024/304935/Corporate-Plan-2024-25.pdf", urlType: "pdf", description: "Investigates complaints about Commonwealth government agencies" },
+  { name: "Office of the Director of Public Prosecutions (CDPP)", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/91930e71-255b-439b-b8d9-ad960201794f/2025-26%20Office%20of%20the%20Director%20of%20Public%20Prosecutions%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Office of the Fair Work Ombudsman (FWO)", portfolio: "Employment and Workplace Relations", type: "Statutory Body", url: "https://www.fairwork.gov.au/sites/default/files/2024-08/office-of-the-fair-work-ombudsman-2024-25-corporate-plan.pdf", urlType: "pdf", description: "Promotes harmonious, productive and cooperative workplace relations in Australia" },
+  { name: "Office of the Inspector-General of Aged Care", portfolio: "Health", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/3bd14c6d-cd75-4917-9e27-93c0e1d6e91f/2025-26%20Office%20of%20the%20Inspector-General%20of%20Aged%20Care%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Office of the Official Secretary to the Governor-General", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/d91e93a4-380e-40db-9b0c-585caae2a31c/2025-26%20Office%20of%20the%20Official%20Secretary%20to%20the%20Governor-General%20Corporate%20Plan%20V2.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Office of the Special Investigator", portfolio: "Treasury", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/9e2ca090-3ac6-46db-8425-83b960690e8a/2025-26%20Office%20of%20the%20Special%20Investigator%20Corporate%20Plan.PDF", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Old Parliament House", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/b6bc4527-c70d-4a37-a832-bb8e0c442936/2025-2026%20Museum%20of%20Australian%20Democracy%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Organ and Tissue Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/33684363-0aca-4ed3-894d-4a759982b8e4/2025-26%20Organ%20and%20Tissue%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Outback Stores Pty Ltd", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/e4c87aaa-a79c-4821-b21e-e46360db1d90/2025-26%20Outback%20Stores%20Pty%20Ltd%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Parliamentary Budget Office", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/eda30705-e193-41c3-9232-f9ba3c9d0aea/2025-26%20Parliamentary%20Budget%20Office%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Parliamentary Workplace Support Service", portfolio: "Employment and Workplace Relations", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/7f6a01ab-2394-49c8-9c4b-5b323dcd5b49/2025-26%20Parliamentary%20Workplace%20Support%20Service%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Productivity Commission", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/6f64524e-55c2-4ec0-886d-21bf464c7d79/2025-26%20Productivity%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Professional Services Review", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/9bcbfa03-c08a-4352-9aac-fef54be00e32/2025-26%20Professional%20Services%20Review%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "RAAF Veterans’ Trust", portfolio: "Defence", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/c4cad84e-41f1-4aec-9fc0-7a8e0c4930e8/2025-26%20RAAF%20Veterans%E2%80%99%20Trust%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "RAAF Welfare Recreational Company", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/7fd5fba2-456f-4f51-bbc6-86d18531f93a/2025-26%20RAAF%20Welfare%20Recreational%20Company%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Regional Investment Corporation", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/8bd9971e-d61d-40e8-bfef-35548c839c4b/2025-26%20Regional%20Investment%20Corporation%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Reserve Bank of Australia", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/aa2bd6b9-b734-45ea-8169-21f50ae4674c/2025-26%20Reserve%20Bank%20of%20Australia%20Corporate%20Plan.PDF", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Royal Australian Air Force Welfare Trust Fund", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/7985259b-9b77-49e3-a7e7-a3af48f45c66/2025-2026%20Royal%20Australian%20Air%20Force%20Welfare%20Trust%20Fund%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Royal Australian Mint", portfolio: "Commonwealth Entity", type: "Agency", url: "https://www.ramint.gov.au/about-us/corporate-publications/corporate-plan", urlType: "web", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Royal Australian Navy Central Canteens Board", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/92fe65eb-a8c0-49c2-8edd-e7578a6a8a48/2025-26%20Royal%20Australian%20Navy%20Central%20Canteens%20Board%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Royal Australian Navy Relief Trust Fund", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/7e0d0fde-8f77-49e8-8a80-4a804b8fe2af/2025-26%20Royal%20Australian%20Navy%20Relief%20Trust%20Fund%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Safe Work Australia", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/bc7c54c6-b55e-40e0-a1e0-1f408577d691/2025-26%20Safe%20Work%20Australia%20Corporate%20Plan.PDF", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Screen Australia", portfolio: "Infrastructure, Transport, Regional Development, Communications and the Arts", type: "Statutory Body", url: "https://www.screenaustralia.gov.au/getmedia/78ab580a-684c-4b61-a585-7b2f0493a0ca/Corporate-Plan-2024.pdf", urlType: "pdf", description: "Develops and promotes Australian screen content across film and television" },
+  { name: "Seafarers Safety, Rehabilitation and Compensation Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/f1022480-9343-465d-a952-09d9cc173d8a/2025-26%20Seafarers%20Safety%2C%20Rehabilitation%20and%20Compensation%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Services Australia", portfolio: "Social Services", type: "Agency", url: "https://www.servicesaustralia.gov.au/corporate-plan", urlType: "web", description: "Delivers Commonwealth social support payments, welfare and health services to Australians" },
+  { name: "Snowy Hydro", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/a36aab0b-f8a3-49da-af68-ca38a0171067/2025-26%20Snowy%20Hydro%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Special Broadcasting Service Corporation", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/83c3e999-bf36-41fa-b490-860d5a525ae6/2025-26%20Special%20Broadcasting%20Service%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Sport Integrity Australia", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/786fd047-630a-40f5-8abb-0ddc99814564/2025-26%20Sport%20Integrity%20Australia%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Sydney Harbour Federation Trust", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/6ba35768-f48e-4ad8-98ac-1c54b787fd1c/2025-26%20Sydney%20Harbour%20Federation%20Trust%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Tertiary Education Quality and Standards Agency (TEQSA)", portfolio: "Education", type: "Agency", url: "https://www.teqsa.gov.au/about-us/reporting-and-accountability/corporate-plan", urlType: "web", description: "Regulates and assures quality in Australia's higher education sector" },
+  { name: "Therapeutic Goods Administration (TGA)", portfolio: "Health", type: "Agency", url: "https://www.tga.gov.au/resources/publication/corporate-reports/tga-business-plan-2025-26", urlType: "web", description: "Regulates medicines, medical devices and biologicals to promote public health in Australia" },
+  { name: "Tiwi Land Council", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/4ddc314a-bab6-442f-be7d-0587848f06ea/2025-26%20Tiwi%20Land%20Council%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Torres Strait Regional Authority", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/b02ba7b9-1a13-42f0-830a-bc5a4e814388/2025-26%20Torres%20Strait%20Regional%20Authority%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Tourism Australia", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/d4c7d320-bf4c-4539-bc18-9b4b4112173c/2025-26%20Tourism%20Australia%20Corporate%20Plan%20V2.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Workplace Gender Equality Agency", portfolio: "Employment and Workplace Relations", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/0c076019-8500-4af5-a262-b4a9ddf2c4a0/2025-26%20Workplace%20Gender%20Equality%20Agency%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "Wreck Bay Aboriginal Community Council", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/65d45e66-f180-4a5b-a5b5-b205cab98527/2025-2026%20Wreck%20Bay%20Aboriginal%20Community%20Council%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+  { name: "WSA Co Limited", portfolio: "Commonwealth Entity", type: "Agency", url: "https://previewapi.transparency.gov.au/delivery/assets/80a82ed1-3e33-027b-b7e0-6493f97f18f8/eac8d739-7f24-4bc6-9235-52ff82671d78/2025-26%20WSA%20Co%20Limited%20Corporate%20Plan.pdf", urlType: "pdf", description: "Commonwealth entity - corporate plan added automatically" },
+];
+
+// Sort alphabetically
+AGENCIES.sort((a, b) => a.name.localeCompare(b.name));
+
+// Populate portfolio filter
+const portfolios = [...new Set(AGENCIES.map(a => a.portfolio))].sort();
+const pf = document.getElementById('portfolioFilter');
+portfolios.forEach(p => {
+  const opt = document.createElement('option');
+  opt.value = p;
+  opt.textContent = p;
+  pf.appendChild(opt);
+});
+
+document.getElementById('countTotal').textContent = AGENCIES.length;
+
+function typeBadgeClass(type) {
+  if (type === 'Department') return 'type-dept';
+  if (type === 'Agency') return 'type-agency';
+  if (type === 'Statutory Body') return 'type-stat';
+  return 'type-entity';
+}
+
+function typeLabel(type) {
+  if (type === 'Department') return 'Dept';
+  if (type === 'Agency') return 'Agency';
+  if (type === 'Statutory Body') return 'Stat. Body';
+  return 'Cwlth Entity';
+}
+
+const openIcon = `<svg viewBox="0 0 20 20"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/></svg>`;
+const dlIcon   = `<svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>`;
+
+function renderCards(list) {
+  const container = document.getElementById('resultsContainer');
+  const noResults = document.getElementById('noResults');
+
+  if (list.length === 0) {
+    container.innerHTML = '';
+    noResults.style.display = 'block';
+    document.getElementById('countShown').textContent = 0;
+    return;
+  }
+
+  noResults.style.display = 'none';
+
+  // Group by first letter
+  const groups = {};
+  list.forEach(a => {
+    const letter = a.name[0].toUpperCase();
+    if (!groups[letter]) groups[letter] = [];
+    groups[letter].push(a);
+  });
+
+  let html = '';
+  Object.keys(groups).sort().forEach(letter => {
+    const items = groups[letter];
+    html += `<div class="alpha-group">
+      <div class="alpha-heading">
+        <div class="alpha-letter">${letter}</div>
+        <span class="alpha-count">${items.length} entit${items.length === 1 ? 'y' : 'ies'}</span>
+      </div>
+      <div class="cards-grid">`;
+
+    items.forEach(a => {
+      const isPdf = a.urlType === 'pdf';
+      html += `<div class="card">
+        <div class="card-header">
+          <div class="card-name">${a.name}</div>
+          <span class="type-badge ${typeBadgeClass(a.type)}">${typeLabel(a.type)}</span>
+        </div>
+        <div class="card-portfolio">${a.portfolio}</div>
+        <div class="card-desc">${a.description}</div>
+        <div class="card-actions">
+          <a href="${a.url}" target="_blank" rel="noopener" class="btn btn-open">
+            ${openIcon} ${isPdf ? 'Open PDF' : 'Open Web'}
+          </a>
+          ${isPdf
+            ? `<a href="${a.url}" download class="btn btn-download">${dlIcon} Download</a>`
+            : `<a href="${a.url}" target="_blank" rel="noopener" class="btn btn-download">${dlIcon} View</a>`
+          }
+        </div>
+      </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html;
+  document.getElementById('countShown').textContent = list.length;
+}
+
+function filterCards() {
+  const query  = document.getElementById('searchInput').value.toLowerCase().trim();
+  const port   = document.getElementById('portfolioFilter').value;
+  const type   = document.getElementById('typeFilter').value;
+  const format = document.getElementById('urlFilter').value;
+
+  const filtered = AGENCIES.filter(a => {
+    const matchSearch = !query ||
+      a.name.toLowerCase().includes(query) ||
+      a.portfolio.toLowerCase().includes(query) ||
+      a.description.toLowerCase().includes(query);
+    const matchPort   = !port   || a.portfolio === port;
+    const matchType   = !type   || a.type === type;
+    const matchFormat = !format || a.urlType === format;
+    return matchSearch && matchPort && matchType && matchFormat;
+  });
+
+  renderCards(filtered);
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('portfolioFilter').value = '';
+  document.getElementById('typeFilter').value = '';
+  document.getElementById('urlFilter').value = '';
+  filterCards();
+}
+
+// Initial render
+renderCards(AGENCIES);
+
+// ── Update Plans Modal ──────────────────────────────────────────────
+
+function currentFinancialYear() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth(); // 0-based; July = 6
+  // Australian financial year: July–June
+  const fyStart = m >= 6 ? y : y - 1;
+  return `${fyStart}-${String(fyStart + 1).slice(-2)}`;
+}
+
+function populateYearSelect() {
+  const sel = document.getElementById('targetYear');
+  const curFY = currentFinancialYear();
+  // Show current FY + next two
+  const [startStr] = curFY.split('-');
+  let base = parseInt(startStr);
+  sel.innerHTML = '';
+  for (let i = 0; i <= 2; i++) {
+    const fy = `${base + i}-${String(base + i + 1).slice(-2)}`;
+    const opt = document.createElement('option');
+    opt.value = fy;
+    opt.textContent = fy;
+    if (i === 0) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+const pendingUrls = {}; // index → new url
+
+function buildSearchUrl(agencyName, year) {
+  const q = encodeURIComponent(`"${agencyName}" "corporate plan" "${year}" site:gov.au`);
+  return `https://www.google.com/search?q=${q}`;
+}
+
+function openUpdateModal() {
+  populateYearSelect();
+  Object.keys(pendingUrls).forEach(k => delete pendingUrls[k]);
+  buildUpdateTable();
+  document.getElementById('updateModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeUpdateModal() {
+  document.getElementById('updateModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('updateModal')) closeUpdateModal();
+}
+
+function buildUpdateTable() {
+  const year = document.getElementById('targetYear').value;
+  const tbody = document.getElementById('updateTableBody');
+  tbody.innerHTML = '';
+
+  AGENCIES.forEach((a, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="agency-name">${a.name}</div>
+        <div class="agency-portfolio">${a.portfolio}</div>
+      </td>
+      <td class="url-cell">
+        <input
+          class="url-input"
+          id="url-input-${i}"
+          type="text"
+          value="${a.url}"
+          placeholder="Paste new URL here…"
+          oninput="trackChange(${i})"
+          spellcheck="false"
+        />
+      </td>
+      <td>
+        <a class="search-link" id="search-link-${i}"
+           href="${buildSearchUrl(a.name, year)}"
+           target="_blank" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+          Search
+        </a>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  updateChangesCount();
+}
+
+function refreshSearchLinks() {
+  const year = document.getElementById('targetYear').value;
+  AGENCIES.forEach((a, i) => {
+    const link = document.getElementById(`search-link-${i}`);
+    if (link) link.href = buildSearchUrl(a.name, year);
+  });
+}
+
+function trackChange(i) {
+  const input = document.getElementById(`url-input-${i}`);
+  const newVal = input.value.trim();
+  if (newVal && newVal !== AGENCIES[i].url) {
+    pendingUrls[i] = newVal;
+    input.classList.add('updated');
+  } else {
+    delete pendingUrls[i];
+    input.classList.remove('updated');
+  }
+  updateChangesCount();
+}
+
+function updateChangesCount() {
+  const n = Object.keys(pendingUrls).length;
+  const el = document.getElementById('changesCount');
+  el.textContent = n > 0 ? `${n} change${n > 1 ? 's' : ''} pending` : '';
+}
+
+function bulkSearch() {
+  const year = document.getElementById('targetYear').value;
+  // Open first 10 to avoid browser blocking too many tabs; warn for more
+  const confirm = AGENCIES.length > 15
+    ? window.confirm(`This will open ${AGENCIES.length} search tabs. Most browsers will block this — it's better to use the per-row Search buttons. Continue anyway?`)
+    : true;
+  if (!confirm) return;
+  AGENCIES.forEach((a, i) => {
+    setTimeout(() => window.open(buildSearchUrl(a.name, year), '_blank'), i * 120);
+  });
+}
+
+function applyUpdates() {
+  const count = Object.keys(pendingUrls).length;
+  if (count === 0) { closeUpdateModal(); return; }
+
+  Object.entries(pendingUrls).forEach(([i, newUrl]) => {
+    const idx = parseInt(i);
+    // Detect urlType from extension
+    const isPdf = newUrl.toLowerCase().includes('.pdf');
+    AGENCIES[idx].url = newUrl;
+    AGENCIES[idx].urlType = isPdf ? 'pdf' : 'web';
+  });
+
+  Object.keys(pendingUrls).forEach(k => delete pendingUrls[k]);
+  closeUpdateModal();
+  filterCards(); // re-render with updated data
+
+  // Flash a success toast
+  showToast(`${count} plan URL${count > 1 ? 's' : ''} updated successfully.`);
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = `
+    position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+    background:#2E7D32; color:white; padding:11px 22px; border-radius:8px;
+    font-size:0.85rem; font-weight:600; z-index:999;
+    box-shadow:0 4px 16px rgba(0,0,0,0.25);
+    animation: fadeIn 0.2s ease;
+  `;
+  t.textContent = '✓ ' + msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>
