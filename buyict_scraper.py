@@ -38,7 +38,7 @@ CONFIG = {
     "page_load_timeout": 30000,
     "log_file": str(Path(__file__).parent / "buyict_scraper.log"),
     "registry_file": str(Path(__file__).parent / "buyict_email_registry.xlsx"),
-    "html_file": str(Path(__file__).parent / "au-gov-buyict-repo" / "index.html"),
+    "html_file": str(Path(__file__).parent / "index.html"),
     "pages_url": "https://nick-claude-agents.github.io/au-gov-buyict/",
 }
 
