@@ -516,7 +516,7 @@ def send_email(results: list[dict], new_emails: set[str], password: str):
 
     html = f"""
 <html><body style="font-family:Arial,sans-serif;font-size:14px;color:#222">
-<h2 style="color:#19473c">BuyICT Opportunity Contacts &mdash; {run_date}</h2>
+<h2 style="color:#19473c">BuyICT Opportunities - {run_date}</h2>
 <p style="margin:8px 0">
   <strong>{len(results)}</strong> opportunities scraped &nbsp;|&nbsp;
   <strong>{len(with_emails)}</strong> with contact emails &nbsp;|&nbsp;
@@ -564,7 +564,7 @@ def send_email(results: list[dict], new_emails: set[str], password: str):
     new_count_str = f", {len(new_emails)} new" if new_emails else ""
     msg = MIMEMultipart("mixed")
     msg["Subject"] = (
-        f"BuyICT Contacts — {run_date} ({len(with_emails)} opportunities{new_count_str})"
+        f"BuyICT Opportunities - {run_date} ({len(with_emails)} opportunities{new_count_str})"
     )
     msg["From"] = f"Market Analysis Tool <{CONFIG['from_email']}>"
     msg["To"]   = CONFIG["to_email"]
