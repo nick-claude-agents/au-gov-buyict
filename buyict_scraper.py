@@ -469,7 +469,6 @@ def save_html(html: str) -> None:
 def send_email(results: list[dict], new_emails: set[str], password: str):
     run_date = datetime.now().strftime("%d %B %Y")
     with_emails    = [r for r in results if r["emails"]]
-    without_emails = [r for r in results if not r["emails"]]
     all_emails_set = {e for r in with_emails for e in r["emails"]}
 
     def _sort_date(r):
@@ -478,19 +477,25 @@ def send_email(results: list[dict], new_emails: set[str], password: str):
         except Exception:
             return datetime.max
 
+    # All opportunities sorted oldest-close-date first
     rows_html = ""
-    for r in sorted(with_emails, key=_sort_date):
-        email_cells = []
-        for email in r["emails"]:
-            if email.lower() in new_emails:
-                email_cells.append(
-                    f"<span style='background:#ffadb5;color:#8b0030;font-weight:bold;"
-                    f"padding:1px 4px;border-radius:3px'>&#9733; {email}</span>"
-                )
-            else:
-                email_cells.append(f"<a href='mailto:{email}'>{email}</a>")
-        emails_html = ", ".join(email_cells)
-        row_bg = "#fff3f4" if any(e.lower() in new_emails for e in r["emails"]) else ""
+    for r in sorted(results, key=_sort_date):
+        if r["emails"]:
+            email_cells = []
+            for email in r["emails"]:
+                if email.lower() in new_emails:
+                    email_cells.append(
+                        f"<span style='background:#ffadb5;color:#8b0030;font-weight:bold;"
+                        f"padding:1px 4px;border-radius:3px'>&#9733; {email}</span>"
+                    )
+                else:
+                    email_cells.append(f"<a href='mailto:{email}'>{email}</a>")
+            emails_html = ", ".join(email_cells)
+            row_bg = "#fff3f4" if any(e.lower() in new_emails for e in r["emails"]) else ""
+        else:
+            emails_html = ""
+            row_bg = ""
+
         rows_html += (
             f"<tr style='background:{row_bg}'>"
             f"<td style='padding:4px 8px;border:1px solid #d0e0dc'>"
@@ -538,10 +543,9 @@ def send_email(results: list[dict], new_emails: set[str], password: str):
 {rows_html}
 </tbody>
 </table>
-{"<p><em>" + str(len(without_emails)) + " opportunities had no contact email.</em></p>" if without_emails else ""}
 <hr/>
 <p style="color:#888;font-size:12px">
-  &#9733; = new contact address not seen in previous runs &nbsp;|&nbsp;
+  &#9733; = new contact address (added to registry today) &nbsp;|&nbsp;
   Registry: buyict_email_registry.xlsx (attached) &nbsp;|&nbsp;
   Generated {datetime.now().strftime("%Y-%m-%d %H:%M")}
 </p>
@@ -551,9 +555,10 @@ def send_email(results: list[dict], new_emails: set[str], password: str):
     text_lines = [f"BuyICT Opportunity Contacts — {run_date}", ""]
     if new_emails:
         text_lines += ["NEW EMAILS THIS RUN:", *sorted(new_emails), ""]
-    for r in sorted(with_emails, key=_sort_date):
+    for r in sorted(results, key=_sort_date):
         marker = "NEW: " if any(e.lower() in new_emails for e in r["emails"]) else "     "
-        text_lines.append(f"{marker}{r['close_date']} | {r['number']} | {r['buyer']} | {', '.join(r['emails'])}")
+        emails_str = ", ".join(r["emails"]) if r["emails"] else ""
+        text_lines.append(f"{marker}{r['close_date']} | {r['number']} | {r['buyer']} | {emails_str}")
     plain = "\n".join(text_lines)
 
     new_count_str = f", {len(new_emails)} new" if new_emails else ""
