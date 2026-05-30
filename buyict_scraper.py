@@ -14,7 +14,12 @@ import re
 import smtplib
 import logging
 import sys
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+# Always use AEST (UTC+10) for display dates so GitHub Actions runner
+# shows the correct Australian date regardless of server timezone.
+AEST = timezone(timedelta(hours=10))
+def now_aest(): return datetime.now(AEST)
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
@@ -95,7 +100,7 @@ def _load_registry() -> dict[str, dict]:
 def update_registry(results: list[dict]) -> tuple[set[str], set[str]]:
     """Update the Excel registry. Returns (new_emails, known_emails)."""
     existing = _load_registry()
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = now_aest().strftime("%Y-%m-%d")
     new_emails: set[str] = set()
 
     for result in results:
@@ -260,7 +265,7 @@ async def scrape_all_details(context, items: list[dict]) -> list[dict]:
 # ── Step 4: Generate HTML page ────────────────────────────────────────────────
 
 def generate_html(results: list[dict], new_emails: set[str]) -> str:
-    run_dt  = datetime.now()
+    run_dt  = now_aest()
     run_date = run_dt.strftime("%d %B %Y")
     run_ts   = run_dt.strftime("%Y-%m-%d %H:%M")
     with_emails    = [r for r in results if r["emails"]]
@@ -467,7 +472,7 @@ def save_html(html: str) -> None:
 # ── Step 5: Send email ────────────────────────────────────────────────────────
 
 def send_email(results: list[dict], new_emails: set[str], password: str):
-    run_date = datetime.now().strftime("%d %B %Y")
+    run_date = now_aest().strftime("%d %B %Y")
     with_emails    = [r for r in results if r["emails"]]
     all_emails_set = {e for r in with_emails for e in r["emails"]}
 
@@ -547,7 +552,7 @@ def send_email(results: list[dict], new_emails: set[str], password: str):
 <p style="color:#888;font-size:12px">
   &#9733; = new contact address (added to registry today) &nbsp;|&nbsp;
   Registry: buyict_email_registry.xlsx (attached) &nbsp;|&nbsp;
-  Generated {datetime.now().strftime("%Y-%m-%d %H:%M")}
+  Generated {now_aest().strftime("%Y-%m-%d %H:%M")}
 </p>
 </body></html>
 """
@@ -606,7 +611,7 @@ async def main():
         sys.exit(1)
 
     log.info("=" * 60)
-    log.info(f"BuyICT scraper starting — {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    log.info(f"BuyICT scraper starting — {now_aest().strftime('%Y-%m-%d %H:%M')}")
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
