@@ -269,30 +269,37 @@ def generate_html(results: list[dict], new_emails: set[str]) -> str:
 
     def esc(s): return html_mod.escape(str(s))
 
+    def sort_key(r):
+        try:
+            return datetime.strptime(r["close_date"], "%d-%m-%Y")
+        except Exception:
+            return datetime.max
+
     rows = ""
-    for r in sorted(with_emails, key=lambda x: x["number"]):
-        email_cells = []
-        for email in r["emails"]:
-            if email.lower() in new_emails:
-                email_cells.append(
-                    f'<a href="mailto:{esc(email)}" class="email-new" title="New this run">'
-                    f'&#9733;&nbsp;{esc(email)}</a>'
-                )
-            else:
-                email_cells.append(
-                    f'<a href="mailto:{esc(email)}" class="email-link">{esc(email)}</a>'
-                )
-        emails_html = "<br>".join(email_cells)
+    for r in sorted(results, key=sort_key):
+        try:
+            sort_date = datetime.strptime(r["close_date"], "%d-%m-%Y").strftime("%Y-%m-%d")
+            disp_date = datetime.strptime(r["close_date"], "%d-%m-%Y").strftime("%d %b %Y")
+        except Exception:
+            sort_date = r["close_date"]
+            disp_date = r["close_date"]
+        if r["emails"]:
+            email_cells = []
+            for email in r["emails"]:
+                if email.lower() in new_emails:
+                    email_cells.append(
+                        f'<a href="mailto:{esc(email)}" class="email-new" title="New this run">'
+                        f'&#9733;&nbsp;{esc(email)}</a>'
+                    )
+                else:
+                    email_cells.append(
+                        f'<a href="mailto:{esc(email)}" class="email-link">{esc(email)}</a>'
+                    )
+            emails_html = "<br>".join(email_cells)
+        else:
+            emails_html = ""
         is_new = any(e.lower() in new_emails for e in r["emails"])
         new_row = ' class="row-new"' if is_new else ""
-        # Parse close date dd-mm-yyyy -> yyyy-mm-dd for sort
-        cd = r["close_date"]
-        try:
-            sort_date = datetime.strptime(cd, "%d-%m-%Y").strftime("%Y-%m-%d")
-            disp_date = datetime.strptime(cd, "%d-%m-%Y").strftime("%d %b %Y")
-        except Exception:
-            sort_date = cd
-            disp_date = cd
         rows += (
             f'<tr{new_row}>'
             f'<td><a href="{esc(r["url"])}" target="_blank" rel="noopener">{esc(r["number"])}</a></td>'
@@ -303,23 +310,7 @@ def generate_html(results: list[dict], new_emails: set[str]) -> str:
             f'</tr>\n'
         )
 
-    no_email_rows = ""
-    for r in sorted(without_emails, key=lambda x: x["number"]):
-        try:
-            sort_date = datetime.strptime(r["close_date"], "%d-%m-%Y").strftime("%Y-%m-%d")
-            disp_date = datetime.strptime(r["close_date"], "%d-%m-%Y").strftime("%d %b %Y")
-        except Exception:
-            sort_date = r["close_date"]
-            disp_date = r["close_date"]
-        no_email_rows += (
-            f'<tr class="row-no-email">'
-            f'<td><a href="{esc(r["url"])}" target="_blank" rel="noopener">{esc(r["number"])}</a></td>'
-            f'<td>{esc(r["buyer"])}</td>'
-            f'<td>{esc(r["title"])}</td>'
-            f'<td data-sort="{sort_date}">{disp_date}</td>'
-            f'<td><em style="color:#aaa">none found</em></td>'
-            f'</tr>\n'
-        )
+    no_email_rows = ""  # all rows now rendered in the single loop above
 
     new_banner = ""
     if new_emails:
@@ -423,7 +414,7 @@ def generate_html(results: list[dict], new_emails: set[str]) -> str:
         </tr>
       </thead>
       <tbody id="tableBody">
-        {rows}{no_email_rows}
+        {rows}
       </tbody>
     </table>
   </div>
@@ -481,8 +472,14 @@ def send_email(results: list[dict], new_emails: set[str], password: str):
     without_emails = [r for r in results if not r["emails"]]
     all_emails_set = {e for r in with_emails for e in r["emails"]}
 
+    def _sort_date(r):
+        try:
+            return datetime.strptime(r["close_date"], "%d-%m-%Y")
+        except Exception:
+            return datetime.max
+
     rows_html = ""
-    for r in sorted(with_emails, key=lambda x: x["number"]):
+    for r in sorted(with_emails, key=_sort_date):
         email_cells = []
         for email in r["emails"]:
             if email.lower() in new_emails:
@@ -554,9 +551,9 @@ def send_email(results: list[dict], new_emails: set[str], password: str):
     text_lines = [f"BuyICT Opportunity Contacts — {run_date}", ""]
     if new_emails:
         text_lines += ["NEW EMAILS THIS RUN:", *sorted(new_emails), ""]
-    for r in sorted(with_emails, key=lambda x: x["number"]):
+    for r in sorted(with_emails, key=_sort_date):
         marker = "NEW: " if any(e.lower() in new_emails for e in r["emails"]) else "     "
-        text_lines.append(f"{marker}{r['number']} | {r['buyer']} | {', '.join(r['emails'])}")
+        text_lines.append(f"{marker}{r['close_date']} | {r['number']} | {r['buyer']} | {', '.join(r['emails'])}")
     plain = "\n".join(text_lines)
 
     new_count_str = f", {len(new_emails)} new" if new_emails else ""
