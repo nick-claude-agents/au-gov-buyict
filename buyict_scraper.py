@@ -38,7 +38,7 @@ CONFIG = {
     "page_load_timeout": 30000,
     "log_file": str(Path(__file__).parent / "buyict_scraper.log"),
     "registry_file": str(Path(__file__).parent / "buyict_email_registry.xlsx"),
-    "html_file": str(Path(__file__).parent / "index.html"),
+    "html_file": str(Path(__file__).parent / "au-gov-buyict-repo" / "index.html"),
     "pages_url": "https://nick-claude-agents.github.io/au-gov-buyict/",
 }
 
@@ -566,7 +566,7 @@ def send_email(results: list[dict], new_emails: set[str], password: str):
     msg["Subject"] = (
         f"BuyICT Contacts — {run_date} ({len(with_emails)} opportunities{new_count_str})"
     )
-    msg["From"] = CONFIG["from_email"]
+    msg["From"] = f"Market Analysis Tool <{CONFIG['from_email']}>"
     msg["To"]   = CONFIG["to_email"]
 
     body = MIMEMultipart("alternative")
