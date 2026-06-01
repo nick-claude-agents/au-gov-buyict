@@ -43,7 +43,10 @@ CONFIG = {
     "page_load_timeout": 30000,
     "log_file": str(Path(__file__).parent / "buyict_scraper.log"),
     "registry_file": str(Path(__file__).parent / "buyict_email_registry.xlsx"),
-    "html_file": str(Path(__file__).parent / "index.html"),
+    # In GitHub Actions (the au-gov-buyict repo) write index.html for Pages.
+    # Locally, write buyict_latest.html so we don't clobber the corporate-plans
+    # dashboard's index.html that shares this Dropbox folder.
+    "html_file": str(Path(__file__).parent / ("index.html" if os.environ.get("GITHUB_ACTIONS") else "buyict_latest.html")),
     "pages_url": "https://nick-claude-agents.github.io/au-gov-buyict/",
 }
 
@@ -203,8 +206,18 @@ async def collect_all_opportunity_urls(page: Page) -> list[dict]:
         else:
             log.warning(f"  Page {pg}: no response, skipping")
 
-    log.info(f"Collected {len(items)} opportunity URLs")
-    return items
+    # Deduplicate by sys_id — pagination occasionally returns the same item twice
+    seen = set()
+    unique_items = []
+    for item in items:
+        sid = item.get("sys_id")
+        if sid and sid not in seen:
+            seen.add(sid)
+            unique_items.append(item)
+    if len(unique_items) < len(items):
+        log.info(f"Deduplicated: {len(items)} -> {len(unique_items)} items ({len(items)-len(unique_items)} dupes removed)")
+    log.info(f"Collected {len(unique_items)} opportunity URLs")
+    return unique_items
 
 
 # ── Step 2: Extract emails from a detail page ─────────────────────────────────
