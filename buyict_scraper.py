@@ -43,10 +43,7 @@ CONFIG = {
     "page_load_timeout": 30000,
     "log_file": str(Path(__file__).parent / "buyict_scraper.log"),
     "registry_file": str(Path(__file__).parent / "buyict_email_registry.xlsx"),
-    # In GitHub Actions (the au-gov-buyict repo) write index.html for Pages.
-    # Locally, write buyict_latest.html so we don't clobber the corporate-plans
-    # dashboard's index.html that shares this Dropbox folder.
-    "html_file": str(Path(__file__).parent / ("index.html" if os.environ.get("GITHUB_ACTIONS") else "buyict_latest.html")),
+    "html_file": str(Path(__file__).parent / "index.html"),
     "pages_url": "https://nick-claude-agents.github.io/au-gov-buyict/",
 }
 
