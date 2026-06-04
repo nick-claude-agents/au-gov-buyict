@@ -180,28 +180,48 @@ async def collect_all_opportunity_urls(page: Page) -> list[dict]:
 
     items.extend(wd["pageItems"])
 
-    for pg in range(2, total_pages + 1):
-        responses.clear()
-        await page.evaluate(f"""
-            () => {{
-                const pag = document.querySelector('.pagination');
-                const scope = angular.element(pag).scope();
-                scope.selectPage({pg}, null);
-                scope.$apply();
-            }}
-        """)
-        for _ in range(30):
-            await asyncio.sleep(0.2)
-            if responses:
-                break
+    seen_ids = {item["sys_id"] for item in items}
 
-        if responses:
+    for pg in range(2, total_pages + 1):
+        page_items = []
+        # Retry up to 3 times if we get all-duplicate data (stale Angular response)
+        for attempt in range(3):
+            responses.clear()
+            await page.evaluate(f"""
+                () => {{
+                    const pag = document.querySelector('.pagination');
+                    const scope = angular.element(pag).scope();
+                    scope.selectPage({pg}, null);
+                    scope.$apply();
+                }}
+            """)
+            # Wait up to 6s for a response
+            for _ in range(30):
+                await asyncio.sleep(0.2)
+                if responses:
+                    break
+
+            if not responses:
+                log.warning(f"  Page {pg}: no response (attempt {attempt+1})")
+                await asyncio.sleep(1)
+                continue
+
             data = json.loads(responses[0])
             page_items = data["result"]["data"].get("pageItems", [])
-            items.extend(page_items)
-            log.info(f"  Page {pg}/{total_pages}: {len(page_items)} items (total so far: {len(items)})")
-        else:
-            log.warning(f"  Page {pg}: no response, skipping")
+            new_ids = {item["sys_id"] for item in page_items if item["sys_id"] not in seen_ids}
+
+            if new_ids or not page_items:
+                break  # Got fresh data (or empty page at end)
+            else:
+                log.warning(f"  Page {pg}: all {len(page_items)} items are duplicates "
+                            f"(attempt {attempt+1}) — retrying...")
+                await asyncio.sleep(1)
+
+        new_count = sum(1 for item in page_items if item["sys_id"] not in seen_ids)
+        items.extend(page_items)
+        seen_ids.update(item["sys_id"] for item in page_items)
+        log.info(f"  Page {pg}/{total_pages}: {len(page_items)} items "
+                 f"({new_count} new, total so far: {len(items)})")
 
     # Deduplicate by sys_id — pagination occasionally returns the same item twice
     seen = set()
