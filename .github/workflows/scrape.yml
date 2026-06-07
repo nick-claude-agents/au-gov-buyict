@@ -1,8 +1,6 @@
-﻿name: Daily BuyICT Scrape
+name: Daily BuyICT Scrape
 
 on:
-  schedule:
-    - cron: '0 19 * * *'   # 5:00 AM AEST (UTC+10)
   workflow_dispatch:
 
 env:
@@ -22,7 +20,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
