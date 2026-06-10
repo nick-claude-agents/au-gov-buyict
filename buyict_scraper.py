@@ -154,7 +154,6 @@ def update_registry(results: list[dict]) -> tuple[set[str], set[str]]:
 # ── Step 1: Collect all opportunity URLs ──────────────────────────────────────
 
 async def collect_all_opportunity_urls(page: Page) -> list[dict]:
-    items = []
     responses: list[str] = []
 
     async def on_response(resp):
@@ -178,63 +177,66 @@ async def collect_all_opportunity_urls(page: Page) -> list[dict]:
     total_pages = (total + size - 1) // size
     log.info(f"Found {total} opportunities across {total_pages} pages")
 
-    items.extend(wd["pageItems"])
+    # Dedupe by sys_id. A single page click can fire several overlapping POSTs
+    # whose responses arrive out of order, so we can't trust arrival order —
+    # each response carries its own `currentPage`, which we match against.
+    by_id: dict[str, dict] = {}
 
-    seen_ids = {item["sys_id"] for item in items}
+    def add_items(page_items: list[dict]) -> None:
+        for it in page_items:
+            sid = it.get("sys_id")
+            if sid:
+                by_id.setdefault(sid, it)
+
+    add_items(wd["pageItems"])
+
+    def find_page_response(target: int) -> dict | None:
+        """Return the result.data whose currentPage == target, if captured."""
+        for body in responses:
+            try:
+                data = json.loads(body)["result"]["data"]
+            except Exception:
+                continue
+            if int(data.get("currentPage", -1)) == target:
+                return data
+        return None
 
     for pg in range(2, total_pages + 1):
-        page_items = []
-        # Retry up to 3 times if we get all-duplicate data (stale Angular response)
-        for attempt in range(3):
-            responses.clear()
-            await page.evaluate(f"""
-                () => {{
-                    const pag = document.querySelector('.pagination');
-                    const scope = angular.element(pag).scope();
-                    scope.selectPage({pg}, null);
-                    scope.$apply();
-                }}
-            """)
-            # Wait up to 6s for a response
-            for _ in range(30):
-                await asyncio.sleep(0.2)
-                if responses:
-                    break
+        responses.clear()
+        await page.evaluate(f"""
+            () => {{
+                const pag = document.querySelector('.pagination');
+                const scope = angular.element(pag).scope();
+                scope.selectPage({pg}, null);
+                scope.$apply();
+            }}
+        """)
+        # Wait for the response that actually corresponds to this page, not just
+        # the first one to arrive (often a stale prior-page response).
+        page_data = None
+        for _ in range(50):
+            await asyncio.sleep(0.2)
+            page_data = find_page_response(pg)
+            if page_data is not None:
+                break
 
-            if not responses:
-                log.warning(f"  Page {pg}: no response (attempt {attempt+1})")
-                await asyncio.sleep(1)
-                continue
+        if page_data is not None:
+            page_items = page_data.get("pageItems", [])
+            add_items(page_items)
+            log.info(f"  Page {pg}/{total_pages}: {len(page_items)} items "
+                     f"(distinct so far: {len(by_id)})")
+        else:
+            log.warning(f"  Page {pg}: no response matching currentPage={pg}, skipping")
 
-            data = json.loads(responses[0])
-            page_items = data["result"]["data"].get("pageItems", [])
-            new_ids = {item["sys_id"] for item in page_items if item["sys_id"] not in seen_ids}
-
-            if new_ids or not page_items:
-                break  # Got fresh data (or empty page at end)
-            else:
-                log.warning(f"  Page {pg}: all {len(page_items)} items are duplicates "
-                            f"(attempt {attempt+1}) — retrying...")
-                await asyncio.sleep(1)
-
-        new_count = sum(1 for item in page_items if item["sys_id"] not in seen_ids)
-        items.extend(page_items)
-        seen_ids.update(item["sys_id"] for item in page_items)
-        log.info(f"  Page {pg}/{total_pages}: {len(page_items)} items "
-                 f"({new_count} new, total so far: {len(items)})")
-
-    # Deduplicate by sys_id — pagination occasionally returns the same item twice
-    seen = set()
-    unique_items = []
-    for item in items:
-        sid = item.get("sys_id")
-        if sid and sid not in seen:
-            seen.add(sid)
-            unique_items.append(item)
-    if len(unique_items) < len(items):
-        log.info(f"Deduplicated: {len(items)} -> {len(unique_items)} items ({len(items)-len(unique_items)} dupes removed)")
-    log.info(f"Collected {len(unique_items)} opportunity URLs")
-    return unique_items
+    items = list(by_id.values())
+    if len(items) < total:
+        log.warning(
+            f"Collected {len(items)} distinct opportunities but site reports "
+            f"{total} — {total - len(items)} missing"
+        )
+    else:
+        log.info(f"Collected {len(items)} opportunity URLs")
+    return items
 
 
 # ── Step 2: Extract emails from a detail page ─────────────────────────────────
