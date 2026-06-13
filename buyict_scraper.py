@@ -44,7 +44,7 @@ CONFIG = {
     "log_file": str(Path(__file__).parent / "buyict_scraper.log"),
     "registry_file": str(Path(__file__).parent / "buyict_email_registry.xlsx"),
     "html_file": str(Path(__file__).parent / "index.html"),
-    "pages_url": "https://nick-claude-agents.github.io/au-gov-buyict/",
+    "pages_url": "https://parbery.appromptu.com/feeds/buyict",
 }
 
 EMAIL_RE = re.compile(r'\b[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\b')
